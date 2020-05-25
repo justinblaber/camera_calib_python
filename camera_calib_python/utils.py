@@ -2,8 +2,8 @@
 
 __all__ = ['reverse', 'torch2np', 'assert_allclose', 'assert_allclose_f', 'assert_allclose_f_ttn', 'torch2np',
            'augment', 'deaugment', 'pmm', 'normalize', 'array_bb', 'bb_grid', 'grid2ps', 'array_ps', 'bb_array',
-           'condition_mat', 'condition', 'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'grad_array',
-           'wlstsq']
+           'bb_sz', 'condition_mat', 'condition', 'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse',
+           'grad_array', 'wlstsq']
 
 #Cell
 import numpy as np
@@ -56,7 +56,7 @@ def torch2np(A):
 #Cell
 def augment(ps):
     if isinstance(ps, np.ndarray):
-        return np.concatenate([ps, np.ones((len(ps),1), dtype=ps.dtype)], axis=1)
+        return np.c_[ps, np.ones(len(ps), dtype=ps.dtype)]
     else:
         return torch.cat([ps, ps.new_ones((len(ps), 1))], dim=1)
 
@@ -65,7 +65,7 @@ def deaugment(ps): return ps[:, 0:-1]
 
 #Cell
 def pmm(A, ps, aug_ps=False):
-    single = True if len(ps.shape) == 1 else False
+    single = len(ps.shape) == 1
     if single: ps = ps[None]
     if aug_ps: ps = augment(ps)
     ps = (A@ps.T).T
@@ -92,13 +92,16 @@ def array_ps(arr): return grid2ps(*bb_grid(array_bb(arr)))
 def bb_array(arr, bb): return arr[bb[0,1]:bb[1,1], bb[0,0]:bb[1,0]]
 
 #Cell
+def bb_sz(bb): return np.array([bb[1,1]-bb[0,1], bb[1,0]-bb[0,0]], dtype=np.int)
+
+#Cell
 def condition_mat(ps):
     xs, ys = ps[:, 0], ps[:, 1]
     mean_x, mean_y = xs.mean(), ys.mean()
     s_m = np.sqrt(2)*len(ps)/(np.sqrt((xs-mean_x)**2+(ys-mean_y)**2)).sum()
     return np.array([[s_m,   0, -mean_x*s_m],
                      [  0, s_m, -mean_y*s_m],
-                     [  0,   0,           1]], dtype=np.float)
+                     [  0,   0,           1]])
 
 #Cell
 def condition(ps):

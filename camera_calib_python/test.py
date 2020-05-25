@@ -7,7 +7,7 @@ import numpy as np
 from scipy.stats import multivariate_normal
 
 from .cb_geom import *
-from .control_refine import OpenCVCheckerRefiner
+from .control_refine import *
 from .utils import *
 
 #Cell
