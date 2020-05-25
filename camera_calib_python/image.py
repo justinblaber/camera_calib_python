@@ -43,12 +43,12 @@ class Img:
     def array_gs(self): # gs == "gray scale"
         arr = self.array
         if len(arr.shape) == 3 and arr.shape[2] == 3:
-            gsa = rgb2gray(arr)
+            arr = rgb2gray(arr)
         elif len(arr.shape) == 2:
-            gsa = np.array(arr) # Makes a copy
+            arr = np.array(arr) # Makes a copy
         else:
             raise RuntimeError(f'Dont know how to handle array of shape: {arr.shape}')
-        return gsa # gsa == gray scale array
+        return arr
 
 #Cell
 class FileImg(Img):
@@ -60,7 +60,7 @@ class FileImg(Img):
     @property
     def name(self):   return self.file_img.stem
     @property
-    def size(self):   return np.flipud(np.array(Image.open(self.file_img).size)) # fast
+    def size(self):   return reverse(Image.open(self.file_img).size) # fast
 
 #Cell
 class File16bitImg(FileImg):
@@ -69,7 +69,7 @@ class File16bitImg(FileImg):
 
     @property
     def array(self):
-        arr = np.array(Image.open(self.file_img), dtype=np.float32)
+        arr = np.array(Image.open(self.file_img), dtype=np.float)
         arr /= 2**16 # Scale between 0 and 1 for 16 bit image
         return arr
 
@@ -80,6 +80,7 @@ class ArrayImg(Img):
         self.sz = np.array(arr.shape[:2])
         self.n = name
 
+        assert_allclose(arr.dtype, np.float)
         if arr.min() < 0: warnings.warn('Value less than 0 found')
         if arr.max() > 1: warnings.warn('Value greater than 1 found')
         self.arr = np.array(arr)

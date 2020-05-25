@@ -21,8 +21,6 @@ def torch2np(A):
 
 #Cell
 def _assert_allclose(A, B, **kwargs): # Inputs should be numpy arrays
-    assert(type(A) == type(B))
-
     if not isinstance(A, tuple): # Recursion exit condition
         try:    assert(np.allclose(A, B, **kwargs))
         except: assert(np.all(A == B))
@@ -151,7 +149,7 @@ def ellipse2conic(h, k, a, b, alpha):
 
     return np.array([[  A, B/2, D/2],
                      [B/2,   C, E/2],
-                     [D/2, E/2,   F]], dtype=np.float)
+                     [D/2, E/2,   F]])
 
 #Cell
 def conic2ellipse(Aq):

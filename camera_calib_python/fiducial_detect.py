@@ -3,6 +3,8 @@
 __all__ = ['imresize', 'normalize', 'DotVisionCheckerDLDetector']
 
 #Cell
+import warnings
+
 import numpy as np
 import torch
 from PIL import Image
@@ -31,25 +33,30 @@ class DotVisionCheckerDLDetector():
         self.cuda  = cuda
         self.model = model
 
-    def format_img(self, img):
-        gsa = imresize(img.array_gs, 384)           # Network trained on grayscale 384 sized images
-        gsa = normalize(gsa, (0, 1), (-1, 1))       # Network trained on images between [-1,1]
-        gsa = transforms.functional.to_tensor(gsa)  # Tensorify
-        gsa = gsa[None]                             # Add batch dimension
-        if self.cuda: gsa = gsa.cuda()              # Possibly run on gpu
-        return gsa
+    def format_arr(self, arr):
+        assert_allclose(arr.dtype,      np.float)  # Floating point check
+        assert_allclose(len(arr.shape), 2)          # Grayscale check
+        if arr.min() < 0: warnings.warn('Value less than zero detected')
+        if arr.max() > 1: warnings.warn('Value greater than 1 detected')
 
-    def get_mask(self, img):
+        arr = imresize(arr, 384)                    # Network trained on grayscale 384 sized images
+        arr = normalize(arr, (0, 1), (-1, 1))       # Network trained on images between [-1,1]
+        arr = transforms.functional.to_tensor(arr)  # Tensorify
+        arr = arr[None]                             # Add batch dimension
+        if self.cuda: arr = arr.cuda()              # Possibly run on gpu
+        return arr
+
+    def get_mask(self, arr):
         model = self.model
         with torch.no_grad():
-            mask = model(self.format_img(img))      # Inference
+            mask = model(self.format_arr(arr))      # Inference
             mask = torch2np(mask)                   # Convert to numpy
             mask = mask.argmax(axis=1)              # Convert from scores to labels
             mask = mask.squeeze(0)                  # Remove batch dimension
         return mask
 
-    def __call__(self, img):
-        mask = self.get_mask(img)
+    def __call__(self, arr):
+        mask = self.get_mask(arr)
 
         # Extract fiducial points from mask
         ps_f = np.full((4,2), np.nan)
@@ -58,6 +65,6 @@ class DotVisionCheckerDLDetector():
             if len(regions) > 0:
                 region = regions[np.argmax([r.area for r in regions])]
                 p_f[:] = reverse(region.centroid)
-        ps_f *= (img.size/mask.shape).mean() # May not be strictly correct
+        ps_f *= (np.array(arr.shape)/mask.shape).mean() # May not be strictly correct
 
         return ps_f
