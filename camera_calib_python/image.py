@@ -45,7 +45,7 @@ class Img:
         if len(arr.shape) == 3 and arr.shape[2] == 3:
             arr = rgb2gray(arr)
         elif len(arr.shape) == 2:
-            arr = np.array(arr) # Makes a copy
+            pass
         else:
             raise RuntimeError(f'Dont know how to handle array of shape: {arr.shape}')
         return arr
@@ -76,20 +76,20 @@ class File16bitImg(FileImg):
 #Cell
 class ArrayImg(Img):
     def __init__(self, arr, name=None):
-        if len(arr.shape) < 2: raise RuntimeError('Input array must have 2 or more dimensions')
+        if len(arr.shape) < 2: raise RuntimeError('Input array has less than 2 dimensions')
         self.sz = np.array(arr.shape[:2])
         self.n = name
 
         assert_allclose(arr.dtype, np.float)
         if arr.min() < 0: warnings.warn('Value less than 0 found')
         if arr.max() > 1: warnings.warn('Value greater than 1 found')
-        self.arr = np.array(arr)
+        self.arr = np.array(arr) # Get copy
 
     @property
     def name(self):   return self.n
     @property
-    def size(self):   return np.array(self.sz)
+    def size(self):   return np.array(self.sz)  # Gets copy
     @property
-    def array(self):  return np.array(self.arr)
+    def array(self):  return np.array(self.arr) # Gets gopy
 
     def exists(self): return True

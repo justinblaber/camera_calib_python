@@ -34,7 +34,7 @@ class DotVisionCheckerDLDetector():
         self.model = model
 
     def format_arr(self, arr):
-        assert_allclose(arr.dtype,      np.float)  # Floating point check
+        assert_allclose(arr.dtype, np.float)        # Floating point check
         assert_allclose(len(arr.shape), 2)          # Grayscale check
         if arr.min() < 0: warnings.warn('Value less than zero detected')
         if arr.max() > 1: warnings.warn('Value greater than 1 detected')

@@ -56,13 +56,13 @@ class CPRefiner:
     def get_W(self, p, b, bb):          return None
     def refine_point(self, arrs, p, W): raise NotImplementedError('Please implement refine_point')
 
-    def refine_points(self, arr, ps, bs):
+    def __call__(self, arr, ps, bs):
         arrs = self.proc_arr(arr)
         bb_arr = array_bb(arr)
         ps_refined = []
         for idx, (p, b) in enumerate(zip(ps, bs)):
-            b_init = b
             self.it_preproc(p, b)
+            b_init = b
             for it in range(self.cutoff_it):
                 p_prev = p
                 bb = self.get_bb(p, b)
@@ -133,8 +133,8 @@ class EllipseRefiner(CPRefiner):
         super().__init__(cutoff_it, cutoff_norm)
 
     def get_bb(self, p, b):
-        return np.c_[np.floor(np.min(b, axis=0)),
-                      np.ceil(np.max(b, axis=0))+1].T.astype(np.int)
+        bb = ps_bb(b)
+        return np.stack([np.floor(bb[0]), np.ceil(bb[1])]).astype(np.int)
 
     def get_W(self, p, b, bb):
         return skimage.draw.polygon2mask(bb_sz(bb), b-bb[0]).astype(np.float)
