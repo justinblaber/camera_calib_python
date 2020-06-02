@@ -17,8 +17,7 @@ def tensors2parameters(*args):
     return params[0] if len(params) == 1 else params
 
 #Cell
-def floats2parameters(*args):
-    return tensors2parameters(*[torch.tensor(arg, dtype=torch.float) for arg in args])
+def floats2parameters(*args): return tensors2parameters(*torch.Tensor(args))
 
 #Cell
 class Inversible(nn.Module):
@@ -185,7 +184,7 @@ class Augment(Inversible):
         super().__init__()
 
     def forward(self, ps): return augment(ps)
-    def inverse(self, ps): return deaugment(ps) # NOTE: Might need to add assert to test if last column is ones
+    def inverse(self, ps): return deaugment(ps)
 
 #Cell
 class NoDistortion(nn.Module):
@@ -196,7 +195,7 @@ class NoDistortion(nn.Module):
 
 #Cell
 class Heikkila97Distortion(nn.Module):
-    def __init__(self, k1, k2, p1, p2):
+    def __init__(self, k1=0, k2=0, p1=0, p2=0):
         super().__init__()
         self.k1, self.k2, self.p1, self.p2 = floats2parameters(k1, k2, p1, p2)
 
@@ -221,7 +220,7 @@ class Heikkila97Distortion(nn.Module):
 
 #Cell
 class Wang08Distortion(nn.Module):
-    def __init__(self, k1, k2, p, t):
+    def __init__(self, k1=0, k2=0, p=0, t=0):
         super().__init__()
         self.k1, self.k2, self.p, self.t = floats2parameters(k1, k2, p, t)
 
@@ -267,7 +266,7 @@ class Cam(Inversible):
 
     def forward(self, ps, inverse=False):
         A = self.forward_param() if not inverse else self.inverse_param()
-        return pmm(A, ps)
+        return pmm(A, ps, aug=True)
     def inverse(self, ps): return self.forward(ps, inverse=True)
 
 #Cell
