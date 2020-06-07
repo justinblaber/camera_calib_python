@@ -3,7 +3,7 @@
 __all__ = ['reverse', 'torch2np', 'assert_allclose', 'assert_allclose_f', 'assert_allclose_f_ttn', 'augment',
            'deaugment', 'normalize', 'unitize', 'ps_bb', 'array_bb', 'bb_grid', 'bb_array', 'bb_sz', 'grid2ps',
            'array_ps', 'pmm', 'condition_mat', 'condition', 'homography', 'approx_R', 'sample_2pi', 'sample_ellipse',
-           'ellipse2conic', 'conic2ellipse', 'grad_array', 'wlstsq']
+           'ellipse2conic', 'conic2ellipse', 'conv2d', 'grad_array', 'wlstsq']
 
 #Cell
 import numpy as np
@@ -205,7 +205,19 @@ def conic2ellipse(Aq):
     return h, k, a, b, alpha
 
 #Cell
-def grad_array(arr): return reverse(np.gradient(arr))
+def conv2d(arr, kernel, **kwargs):
+    assert_allclose(arr.dtype, kernel.dtype)
+    _conv2d = torch.nn.functional.conv2d
+    arr, kernel = map(torch.tensor, [arr, kernel])
+    return torch2np(_conv2d(arr[None,None], kernel[None, None], **kwargs)).squeeze(axis=(0,1))
+
+#Cell
+def grad_array(arr):
+    kernel_sobel = np.array([[-0.1250, 0, 0.1250],
+                             [-0.2500, 0, 0.2500],
+                             [-0.1250, 0, 0.1250]], dtype=arr.dtype)
+    arr = np.pad(arr, 1, mode='edge')
+    return [conv2d(arr, kernel) for kernel in [kernel_sobel, kernel_sobel.T]]
 
 #Cell
 def wlstsq(A, b, W=None):

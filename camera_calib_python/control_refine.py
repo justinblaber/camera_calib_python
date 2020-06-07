@@ -67,10 +67,10 @@ class CPRefiner:
                 p_prev = p
                 bb = self.get_bb(p, b)
                 if not is_bb_in_bb(bb, bb_arr): p = np.full(2, np.nan); break
-                w = self.get_W(p, b, bb)
-                p = self.refine_point([bb_array(arr, bb) for arr in arrs], p-bb[0], w)+bb[0]
+                W = self.get_W(p, b, bb)
+                p = self.refine_point([bb_array(arr, bb) for arr in arrs], p-bb[0], W)+bb[0]
                 if np.any(np.isnan(p)): break
-                if not is_p_in_b(p, b_init): p = np.full(2, np.nan); break
+                if not is_p_in_b(p, b_init):    p = np.full(2, np.nan); break
                 if np.linalg.norm(p-p_prev) < self.cutoff_norm: break
                 b = b-p_prev+p
             ps_refined.append(p)
@@ -91,9 +91,11 @@ class CheckerRefiner(CPRefiner):
         if hw < self.hw_min: hw = self.hw_min
         if hw > self.hw_max: hw = self.hw_max
         self.hw = hw
+        self.bb = np.array([[-self.hw, -self.hw],
+                            [ self.hw,  self.hw]])
 
     def get_bb(self, p, b):
-        return np.array([[-self.hw, -self.hw],[self.hw, self.hw]]) + np.round(p).astype(np.int)
+        return self.bb+np.round(p).astype(np.int)
 
     def get_W(self, p, b, bb):
         sigma = self.hw/2
@@ -132,12 +134,17 @@ class EllipseRefiner(CPRefiner):
     def __init__(self, cutoff_it, cutoff_norm):
         super().__init__(cutoff_it, cutoff_norm)
 
-    def get_bb(self, p, b):
+    def it_preproc(self, p, b):
         bb = ps_bb(b)
-        return np.stack([np.floor(bb[0]), np.ceil(bb[1])]).astype(np.int)
+        bb = np.stack([np.floor(bb[0]), np.ceil(bb[1])]).astype(np.int)
+        W = skimage.draw.polygon2mask(bb_sz(bb), b-bb[0]).astype(np.float)
+        self.bb, self.W = bb-np.round(p).astype(np.int), W
+
+    def get_bb(self, p, b):
+        return self.bb+np.round(p).astype(np.int)
 
     def get_W(self, p, b, bb):
-        return skimage.draw.polygon2mask(bb_sz(bb), b-bb[0]).astype(np.float)
+        return self.W
 
 #Cell
 def fit_conic(arr_dx, arr_dy, W=None):

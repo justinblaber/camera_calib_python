@@ -37,7 +37,7 @@ class Inverse(Inversible): # Note that Inverse is itself Inversible...
         self.m = m
 
     def __repr__(self):
-        return f"{self.__class__.__name__}({self.m.__repr__()})"
+        return f'{self.__class__.__name__}({self.m.__repr__()})'
 
     def forward_param(self): return self.m.inverse_param()
     def inverse_param(self): return self.m.forward_param()
