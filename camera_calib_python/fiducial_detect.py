@@ -64,7 +64,7 @@ class DotVisionCheckerDLDetector():
             regions = regionprops(label(mask == (idx+1)))
             if len(regions) > 0:
                 region = regions[np.argmax([r.area for r in regions])]
-                p_f[:] = reverse(region.centroid)
+                ps_f[idx] = reverse(region.centroid)
         ps_f *= (np.array(arr.shape)/mask.shape).mean() # May not be strictly correct
 
         return ps_f

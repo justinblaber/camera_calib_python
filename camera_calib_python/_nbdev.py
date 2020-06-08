@@ -2,7 +2,12 @@
 
 __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
-index = {"crrgrid": "cb_geom.ipynb",
+index = {"init_intrin": "calib.ipynb",
+         "init_extrin": "calib.ipynb",
+         "SSE": "calib.ipynb",
+         "single_calib_f": "calib.ipynb",
+         "single_calib_H": "calib.ipynb",
+         "crrgrid": "cb_geom.ipynb",
          "csrgrid": "cb_geom.ipynb",
          "csdgrid": "cb_geom.ipynb",
          "cfpgrid": "cb_geom.ipynb",
@@ -94,7 +99,6 @@ modules = ["calib.py",
            "fiducial_detect.py",
            "image.py",
            "modules.py",
-           "test.py",
            "utils.py"]
 
 git_url = "https://github.com/justinblaber/camera_calib_python/tree/master/"

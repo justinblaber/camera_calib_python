@@ -12,7 +12,7 @@ from .utils import *
 #Cell
 def crrgrid(num_h, num_w, spacing_h, spacing_w):
     h, w = spacing_h*(num_h-1), spacing_w*(num_w-1)
-    return grid2ps(*np.meshgrid(np.linspace(-w/2,  w/2, num_w), np.linspace(-h/2,  h/2, num_h)), 'F')
+    return grid2ps(*np.meshgrid(np.linspace(-w/2, w/2, num_w), np.linspace(-h/2, h/2, num_h)), 'F')
 
 #Cell
 def csrgrid(num_h, num_w, spacing): return crrgrid(num_h, num_w, spacing, spacing)
