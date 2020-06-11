@@ -35,6 +35,9 @@ class Img:
             raise RuntimeError(f'Dont know how to handle array of shape: {arr.shape}')
         return arr
 
+    def __repr__(self):
+        return f'{self.__class__.__name__}({self.name})'
+
 #Cell
 class FileImg(Img):
     def __init__(self, file_img):
