@@ -120,15 +120,15 @@ def single_calib(imgs,
     # Get initial homographies via fiducial markers
     Hs = [homography(ps_f_w, detector(img.array_gs)) for img in imgs]
 
-    # Get refined control points
+    # Refine control points
     pss_c_p = []
     for img, H in zip(imgs, Hs):
         print(f'Refining control points for: {img.name}...')
-        ps_c_p = pmm(H, ps_c_w, aug=True) # This guess needs to be updated for circle control points
+        ps_c_p = pmm(H, ps_c_w, aug=True) # This guess should to be updated for circle control points
         bs_c_p = [pmm(H, b_c_w, aug=True) for b_c_w in bs_c_w]
         pss_c_p.append(refiner(img.array_gs, ps_c_p, bs_c_p))
 
-    # Update homographies with refined control points; again, might need to get updated for circle detection
+    # Update homographies with refined control points; should to be updated for circle control points
     Hs = [homography(ps_c_w, ps_c_p) for ps_c_p in pss_c_p]
 
     # Get initial guesses; distortion assumed to be zero
@@ -162,7 +162,7 @@ def single_calib(imgs,
              torch2np(tuple([w2p(ps_c_w) for w2p in w2ps]))))
 
 #Cell
-def calib_multi(df_img,
+def calib_multi(imgs,
                 cb_geom,
                 detector,
                 refiner,
@@ -174,9 +174,9 @@ def calib_multi(df_img,
     # Get calibration board world coordinates
     ps_c_w = cb_geom.ps_c
 
-    # Get indices of cams and poses
-    idxs_cam = np.sort(df_img.idx_cam.unique())
-    idxs_pos = np.sort(df_img.idx_pos.unique())
+    # Get sorted unique indices of cams and poses
+    idxs_cam = np.unique([img.idx_cam for img in imgs])
+    idxs_pos = np.unique([img.idx_pos for img in imgs])
     assert_allclose(idxs_cam, np.arange(len(idxs_cam)))
     assert_allclose(idxs_pos, np.arange(len(idxs_pos)))
 
@@ -184,10 +184,8 @@ def calib_multi(df_img,
     G = nx.DiGraph()
     nodes_pos = [PosNode(idx_pos) for idx_pos in idxs_pos]
     nodes_cam = []
-    df_img['ps_c_p'] = pd.Series([], dtype=object) # Initializes column type
-    for idx_cam in np.sort(df_img.idx_cam.unique()):
-        df_cam = df_img[df_img.idx_cam == idx_cam]
-        imgs_cam = df_cam.img.to_list()
+    for idx_cam in idxs_cam:
+        imgs_cam = [img for img in imgs if img.idx_cam == idx_cam]
         cam, distort, rigids, (pss_c_p, _) = single_calib(imgs_cam,
                                                           cb_geom,
                                                           detector,
@@ -197,52 +195,48 @@ def calib_multi(df_img,
                                                           loss,
                                                           cutoff_it,
                                                           cutoff_norm)
-        df_img.loc[df_cam.index, 'ps_c_p'] = pss_c_p
+        for img_cam, ps_c_p in zip(imgs_cam, pss_c_p): img_cam.ps_c_p = ps_c_p
         node_cam = CamNode(idx_cam, cam, distort)
-        for img_cam, m_rigid in zip(imgs_cam, rigids):
-            row = df_img[df_img.img == img_cam]
-            node_pos = nodes_pos[row.idx_pos.item()]
-            G.add_edge(node_pos, node_cam, m_rigid=m_rigid)
-            G.add_edge(node_cam, node_pos, m_rigid=Inverse(m_rigid))
+        for img_cam, rigid in zip(imgs_cam, rigids):
+            node_pos = nodes_pos[img_cam.idx_pos]
+            G.add_edge(node_pos, node_cam, rigid=rigid)
+            G.add_edge(node_cam, node_pos, rigid=Inverse(rigid))
         nodes_cam.append(node_cam)
 
     # Do BFS and compute initial affines along the way
     nodes_cam[0].M = torch.eye(4, dtype=torch.double)
     for (node_prnt, node_chld) in nx.bfs_edges(G, nodes_cam[0]):
-        node_chld.M = node_prnt.M@G.get_edge_data(node_chld, node_prnt)['m_rigid'].get_param()
+        node_chld.M = node_prnt.M@G.get_edge_data(node_chld, node_prnt)['rigid'].get_param()
 
     # Entering torch land....
 
-    # Get points for nonlinear refinement
+    # Format control points
     ps_c_w = torch.DoubleTensor(np.c_[ps_c_w, np.zeros(len(ps_c_w))]) # 3rd dimension is zero
-    df_img.ps_c_p = df_img.ps_c_p.apply(torch.DoubleTensor)
+    pss_c_p = [torch.DoubleTensor(img.ps_c_p) for img in imgs]
 
     # Initialize modules
     cams = [nodes_cam[idx].cam for idx in idxs_cam]
     distorts = [nodes_cam[idx].distort for idx in idxs_cam]
     rigids_pos = [Rigid(*M2Rt(nodes_pos[idx].M)) for idx in idxs_pos]
     rigids_cam = [Rigid(*M2Rt(invert_rigid(nodes_cam[idx].M))) for idx in idxs_cam]
-
-    # Get ms_w2p transformations; depends on control point type
-    df_img['m_w2p'] = pd.Series([], dtype=object) # Initializes column type
     if isinstance(refiner, CheckerRefiner):
-        for idx, row in df_img.iterrows():
-             df_img.loc[idx, 'm_w2p'] = torch.nn.Sequential(rigids_pos[row.idx_pos],
-                                                            rigids_cam[row.idx_cam],
-                                                            Normalize(),
-                                                            distorts[row.idx_cam],
-                                                            cams[row.idx_cam])
+        w2ps = [torch.nn.Sequential(rigids_pos[img.idx_pos],
+                                    rigids_cam[img.idx_cam],
+                                    Normalize(),
+                                    distorts[img.idx_cam],
+                                    cams[img.idx_cam]) for img in imgs]
     else:
         raise RuntimeError(f'Dont know how to handle: {type(refiner)}')
 
-    # Do nonlinear optimization
+    # Optimize parameters; make sure not to optimize first rigid camera transform (which is identity)
+    print(f'Refining multi parameters...')
     for p in rigids_cam[0].parameters(): p.requires_grad_(False)
     lbfgs_optimize(lambda: sum([list(m.parameters()) for m in cams + distorts + rigids_cam[1:] + rigids_pos], []),
-                   lambda: w2p_loss(df_img.m_w2p.to_list(), ps_c_w, df_img.ps_c_p.to_list(), loss),
+                   lambda: w2p_loss(w2ps, ps_c_w, pss_c_p, loss),
                    cutoff_it,
                    cutoff_norm)
 
     return (cams, distorts, rigids_pos, rigids_cam,
-            (torch2np(tuple([row.ps_c_p for _,row in df_img.iterrows()])),
-             torch2np(tuple([row.m_w2p(ps_c_w) for _,row in df_img.iterrows()])),
+            (torch2np(tuple(pss_c_p)),
+             torch2np(tuple([w2p(ps_c_w) for w2p in w2ps])),
              G, nodes_cam, nodes_pos))
