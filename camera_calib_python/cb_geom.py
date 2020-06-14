@@ -88,15 +88,13 @@ class FmCFPGrid(FmGeom):
 
 #Cell
 class CbGeom():
-    def __init__(
-        self,
-        h_cb,
-        w_cb,
-        cp_geom,
-        fm_geom=None,
-        idx_c_exclude=np.empty(0, dtype=np.int),
-        idx_f_exclude=np.empty(0, dtype=np.int)
-    ):
+    def __init__(self,
+                 h_cb,
+                 w_cb,
+                 cp_geom,
+                 fm_geom=None,
+                 idx_c_exclude=np.empty(0, dtype=np.int),
+                 idx_f_exclude=np.empty(0, dtype=np.int)):
         self.h_cb, self.w_cb = h_cb, w_cb
         self.cp_geom = cp_geom
         self.fm_geom = fm_geom

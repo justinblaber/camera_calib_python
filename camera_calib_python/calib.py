@@ -94,7 +94,7 @@ class PosNode(Node):
 def draw_bipartite(G, nodes_cam, nodes_pos, ax=None):
     if ax == None: _, ax = plt.subplots(1, 1, figsize=(10,10))
 
-    def _get_p(nodes, x): return {node: (x, y) for node,y in zip(nodes, np.linspace(0, 1, len(nodes)))}
+    def _get_p(nodes, x): return {node: (x,y) for node,y in zip(nodes, np.linspace(0, 1, len(nodes)))}
     nx.draw(G,
             node_color=['g' if isinstance(node, CamNode) else 'r' for node in G],
             pos={**_get_p(nodes_cam, 0),
@@ -124,18 +124,16 @@ def single_calib(imgs,
     pss_c_p = []
     for img, H in zip(imgs, Hs):
         print(f'Refining control points for: {img.name}...')
-        ps_c_p = pmm(H, ps_c_w, aug=True) # This guess should to be updated for circle control points
+        ps_c_p = pmm(H, ps_c_w, aug=True) # This guess should be updated for circle control points
         bs_c_p = [pmm(H, b_c_w, aug=True) for b_c_w in bs_c_w]
         pss_c_p.append(refiner(img.array_gs, ps_c_p, bs_c_p))
 
-    # Update homographies with refined control points; should to be updated for circle control points
+    # Update homographies with refined control points; should be updated for circle control points
     Hs = [homography(ps_c_w, ps_c_p) for ps_c_p in pss_c_p]
 
     # Get initial guesses; distortion assumed to be zero
     A = init_intrin(Hs, imgs[0].size)
     Rs, ts = zip(*[init_extrin(H, A) for H in Hs])
-
-    # Entering torch land...
 
     # Format control points
     ps_c_w = torch.DoubleTensor(np.c_[ps_c_w, np.zeros(len(ps_c_w))]) # 3rd dimension is zero
@@ -207,8 +205,6 @@ def calib_multi(imgs,
     nodes_cam[0].M = torch.eye(4, dtype=torch.double)
     for (node_prnt, node_chld) in nx.bfs_edges(G, nodes_cam[0]):
         node_chld.M = node_prnt.M@G.get_edge_data(node_chld, node_prnt)['rigid'].get_param()
-
-    # Entering torch land....
 
     # Format control points
     ps_c_w = torch.DoubleTensor(np.c_[ps_c_w, np.zeros(len(ps_c_w))]) # 3rd dimension is zero

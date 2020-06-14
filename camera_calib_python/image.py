@@ -65,7 +65,7 @@ class File16bitImg(FileImg):
 class ArrayImg(Img):
     def __init__(self, arr, name=None):
         if len(arr.shape) < 2: raise RuntimeError('Input array has less than 2 dimensions')
-        self.sz = np.array(arr.shape[:2])
+        self.sz = arr.shape[:2]
         self.n = name
 
         assert_allclose(arr.dtype, np.float)
