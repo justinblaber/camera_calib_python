@@ -71,6 +71,7 @@ index = {"init_intrin": "calib.ipynb",
          "a2A": "modules.ipynb",
          "Cam": "modules.ipynb",
          "CamSF": "modules.ipynb",
+         "plot_extrinsics": "plot.ipynb",
          "reverse": "utils.ipynb",
          "torch2np": "utils.ipynb",
          "assert_allclose": "utils.ipynb",
@@ -106,6 +107,7 @@ modules = ["calib.py",
            "fiducial_detect.py",
            "image.py",
            "modules.py",
+           "plot.py",
            "utils.py"]
 
 git_url = "https://github.com/justinblaber/camera_calib_python/tree/master/"
