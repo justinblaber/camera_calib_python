@@ -21,7 +21,7 @@ def csrgrid(num_h, num_w, spacing): return crrgrid(num_h, num_w, spacing, spacin
 def csdgrid(num_h, num_w, spacing, fo): # Pretty sure this implementation can be vastly improved
     h, w = spacing*(num_h-1), spacing*(num_w-1)
     xs_grid, ys_grid = np.linspace(-w/2, w/2, num_w), np.linspace(-h/2, h/2, num_h)
-    ps = np.empty((0,2))
+    ps = []
     for x_grid in xs_grid:
         if fo:
             ys = ys_grid[0::2]
@@ -30,8 +30,8 @@ def csdgrid(num_h, num_w, spacing, fo): # Pretty sure this implementation can be
             ys = ys_grid[1::2]
             fo = True
         xs = np.tile(x_grid, len(ys))
-        ps = np.r_[ps, np.c_[xs, ys]]
-    return ps
+        ps.append(np.c_[xs, ys])
+    return np.concatenate(ps)
 
 #Cell
 def cfpgrid(h, w): return crrgrid(2, 2, h, w)

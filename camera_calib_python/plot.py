@@ -22,7 +22,7 @@ def plot_extrinsics(rigids_pos, rigids_cam, cb_geom, ax=None):
     # To make plot more intuitive, I've swapped the Y and Z axes
 
     # Matplotlib currently has poor support for setting aspect ratio of 3D plots,
-    # so keep track of all points and set box aspect at the end
+    # so keep track of all points, set bounding box, then set box aspect at the end
     ps_all = []
 
     # Plot calibration boards
@@ -38,7 +38,7 @@ def plot_extrinsics(rigids_pos, rigids_cam, cb_geom, ax=None):
         ps_all.append(ps_cb_root)
 
     # Plot cameras
-    sz_cam = np.min([cb_geom.h_cb, cb_geom.w_cb])/4
+    sz_cam = np.min([cb_geom.h_cb, cb_geom.w_cb])/4 # heuristic; possibly make this argument
     ps_axes = torch.DoubleTensor([[         0,          0,          0],
                                   [2.0*sz_cam,          0,          0],
                                   [         0,          0,          0],

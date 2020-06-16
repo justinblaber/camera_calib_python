@@ -47,7 +47,7 @@ def is_p_in_b(p, b): return Polygon(b).contains(Point(*p))
 #Cell
 class CPRefiner:
     def __init__(self, cutoff_it, cutoff_norm):
-        self.cutoff_it = cutoff_it
+        self.cutoff_it   = cutoff_it
         self.cutoff_norm = cutoff_norm
 
     def proc_arr(self, arr):            return (arr,)

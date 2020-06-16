@@ -19,14 +19,15 @@ def init_intrin(Hs, sz):
     po_inv = np.array([[1, 0, -xo],
                        [0, 1, -yo],
                        [0, 0,   1]])
-    A, b = [np.empty(0) for _ in range(2)]
+    A, b = [], []
     for H in Hs:
         H_bar = po_inv@H
         v1, v2 = H_bar[:,0], H_bar[:,1]
         v3, v4 = v1+v2, v1-v2
         v1, v2, v3, v4 = unitize(np.stack([v1, v2, v3, v4]))
-        A = np.r_[A, np.array([v1[0]*v2[0]+v1[1]*v2[1], v3[0]*v4[0]+v3[1]*v4[1]])]
-        b = np.r_[b, np.array([-v1[2]*v2[2], -v3[2]*v4[2]])]
+        A.append(np.array([v1[0]*v2[0]+v1[1]*v2[1], v3[0]*v4[0]+v3[1]*v4[1]]))
+        b.append(np.array([-v1[2]*v2[2], -v3[2]*v4[2]]))
+    A, b = map(np.concatenate, [A, b])
     alpha = np.sqrt(np.dot(b,A)/np.dot(b,b))
     return np.array([[alpha,     0, xo],
                      [    0, alpha, yo],
@@ -49,7 +50,7 @@ def SSE(x1, x2): return ((x1-x2)**2).sum()
 def w2p_loss(w2ps, ps_c_w, pss_c_p, loss):
     ls = []
     for w2p, ps_c_p in zip(w2ps, pss_c_p):
-        idx = torch.where(torch.all(torch.isfinite(ps_c_p), dim=1))[0]
+        idx = torch.all(torch.isfinite(ps_c_p), dim=1)
         ls.append(loss(w2p(ps_c_w[idx]), ps_c_p[idx]))
     return sum(ls)
 
@@ -93,7 +94,6 @@ class PosNode(Node):
 #Cell
 def draw_bipartite(G, nodes_cam, nodes_pos, ax=None):
     if ax == None: _, ax = plt.subplots(1, 1, figsize=(10,10))
-
     def _get_p(nodes, x): return {node: (x,y) for node,y in zip(nodes, np.linspace(0, 1, len(nodes)))}
     nx.draw(G,
             node_color=['g' if isinstance(node, CamNode) else 'r' for node in G],
@@ -101,8 +101,9 @@ def draw_bipartite(G, nodes_cam, nodes_pos, ax=None):
                  **_get_p(nodes_pos, 1)},
             with_labels=True,
             ax=ax)
-    plt.xlim(-0.5, 1.5);
-    plt.ylim(-0.5, 1.5);
+    ax.set_xlim(-0.5, 1.5)
+    ax.set_ylim(-0.5, 1.5)
+    ax.invert_yaxis()
 
 #Cell
 def single_calib(imgs,
@@ -172,7 +173,7 @@ def calib_multi(imgs,
     # Get calibration board world coordinates
     ps_c_w = cb_geom.ps_c
 
-    # Get sorted unique indices of cams and poses
+    # Get sorted unique indices of cams and poses; np.unique will sort according to docs
     idxs_cam = np.unique([img.idx_cam for img in imgs])
     idxs_pos = np.unique([img.idx_pos for img in imgs])
     assert_allclose(idxs_cam, np.arange(len(idxs_cam)))
@@ -211,10 +212,10 @@ def calib_multi(imgs,
     pss_c_p = [torch.DoubleTensor(img.ps_c_p) for img in imgs]
 
     # Initialize modules
-    cams = [nodes_cam[idx].cam for idx in idxs_cam]
-    distorts = [nodes_cam[idx].distort for idx in idxs_cam]
-    rigids_pos = [Rigid(*M2Rt(nodes_pos[idx].M)) for idx in idxs_pos]
-    rigids_cam = [Rigid(*M2Rt(invert_rigid(nodes_cam[idx].M))) for idx in idxs_cam]
+    cams = [node_cam.cam for node_cam in nodes_cam]
+    distorts = [node_cam.distort for node_cam in nodes_cam]
+    rigids_pos = [Rigid(*M2Rt(node_pos.M)) for node_pos in nodes_pos]
+    rigids_cam = [Rigid(*M2Rt(invert_rigid(node_cam.M))) for node_cam in nodes_cam]
     if isinstance(refiner, CheckerRefiner):
         w2ps = [torch.nn.Sequential(rigids_pos[img.idx_pos],
                                     rigids_cam[img.idx_cam],
@@ -227,7 +228,7 @@ def calib_multi(imgs,
     # Optimize parameters; make sure not to optimize first rigid camera transform (which is identity)
     print(f'Refining multi parameters...')
     for p in rigids_cam[0].parameters(): p.requires_grad_(False)
-    lbfgs_optimize(lambda: sum([list(m.parameters()) for m in cams + distorts + rigids_cam[1:] + rigids_pos], []),
+    lbfgs_optimize(lambda: sum([list(m.parameters()) for m in cams+distorts+rigids_cam[1:]+rigids_pos], []),
                    lambda: w2p_loss(w2ps, ps_c_w, pss_c_p, loss),
                    cutoff_it,
                    cutoff_norm)
