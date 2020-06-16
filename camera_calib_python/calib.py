@@ -4,6 +4,7 @@ __all__ = ['init_intrin', 'init_extrin', 'SSE', 'w2p_loss', 'lbfgs_optimize', 'N
            'draw_bipartite', 'single_calib', 'calib_multi']
 
 #Cell
+import matplotlib.pyplot as plt
 import networkx as nx
 import numpy as np
 import torch
