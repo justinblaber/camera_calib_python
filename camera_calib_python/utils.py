@@ -136,7 +136,7 @@ def homography(ps1, ps2):
 def approx_R(R):
     [U,_,V] = np.linalg.svd(R)
     R = U@V
-    if np.abs(np.linalg.det(R)-1) > np.finfo(np.float32).eps:
+    if not np.isclose(np.linalg.det(R), 1):
         R = np.full((3,3), np.nan)
     return R
 
@@ -169,7 +169,6 @@ def ellipse2conic(h, k, a, b, alpha):
 #Cell
 def conic2ellipse(Aq):
     sqrt, abs, arctan, pi = np.sqrt, np.abs, np.arctan, np.pi
-    eps = np.finfo(np.float32).eps # Use single precision for more wiggle room
 
     A = Aq[0, 0]
     B = 2*Aq[0, 1]
@@ -179,7 +178,7 @@ def conic2ellipse(Aq):
     F = Aq[2, 2]
 
     # Return nans if input conic is not ellipse
-    if np.any(~np.isfinite(Aq.ravel())) or np.abs(B**2-4*A*C) < eps or B**2-4*A*C > 0:
+    if np.any(~np.isfinite(Aq.ravel())) or np.isclose(B**2-4*A*C, 0) or B**2-4*A*C > 0:
         return np.full(5, np.nan)
 
     # Equations below are from https://math.stackexchange.com/a/820896/39581
@@ -196,12 +195,12 @@ def conic2ellipse(Aq):
     a = 1/8*sqrt(2*abs(q)*sqrt(B**2+(A-C)**2)-2*q*(A+C))
     b = sqrt(a**2-s**2)
     # Get alpha; note that range of alpha is [0, pi)
-    if abs(q*A-q*C) < eps and abs(q*B) < eps:         alpha = 0 # Circle
-    elif abs(q*A-q*C) < eps and q*B > 0:              alpha = 1/4*pi
-    elif abs(q*A-q*C) < eps and q*B < 0:              alpha = 3/4*pi
-    elif q*A-q*C > 0 and (abs(q*B) < eps or q*B > 0): alpha = 1/2*arctan(B/(A-C))
-    elif q*A-q*C > 0 and q*B < 0:                     alpha = 1/2*arctan(B/(A-C)) + pi
-    elif q*A-q*C < 0:                                 alpha = 1/2*arctan(B/(A-C)) + 1/2*pi
+    if np.isclose(q*A-q*C, 0) and np.isclose(q*B, 0):     alpha = 0 # Circle
+    elif np.isclose(q*A-q*C, 0) and q*B > 0:              alpha = 1/4*pi
+    elif np.isclose(q*A-q*C, 0) and q*B < 0:              alpha = 3/4*pi
+    elif q*A-q*C > 0 and (np.isclose(q*B, 0) or q*B > 0): alpha = 1/2*arctan(B/(A-C))
+    elif q*A-q*C > 0 and q*B < 0:                         alpha = 1/2*arctan(B/(A-C)) + pi
+    elif q*A-q*C < 0:                                     alpha = 1/2*arctan(B/(A-C)) + 1/2*pi
     else: raise RuntimeError('"Impossible" condition reached; please debug')
 
     return h, k, a, b, alpha
