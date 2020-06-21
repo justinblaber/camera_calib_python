@@ -46,10 +46,12 @@ def assert_allclose_f_ttn(f, x, y, **kwargs): # ttn == "torch, then numpy"
 
 #Cell
 def augment(ps):
-    if isinstance(ps, np.ndarray):
-        return np.c_[ps, np.ones(len(ps), dtype=ps.dtype)]
-    else:
-        return torch.cat([ps, ps.new_ones((len(ps), 1))], dim=1)
+    single = len(ps.shape) == 1
+    if single: ps = ps[None]
+    if isinstance(ps, np.ndarray): ps = np.c_[ps, np.ones(len(ps), dtype=ps.dtype)]
+    else:                          ps = torch.cat([ps, ps.new_ones((len(ps), 1))], dim=1)
+    if single: ps = ps[0]
+    return ps
 
 #Cell
 def deaugment(ps): return ps[:, 0:-1]
