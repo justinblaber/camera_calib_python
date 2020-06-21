@@ -24,7 +24,8 @@ def pm2l(p, m):
 def ps2l(p1, p2):
     x1, y1 = p1
     x2, y2 = p2
-    m = (y2-y1)/(x2-x1)
+    if not np.isclose(x2-x1, 0): m = (y2-y1)/(x2-x1)
+    else:                        m = np.inf
     return pm2l(p1, m)
 
 #Cell
