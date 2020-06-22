@@ -38,7 +38,7 @@ def plot_extrinsics(rigids_pos, rigids_cam, cb_geom, ax=None):
         ps_all.append(ps_cb_root)
 
     # Plot cameras
-    sz_cam = np.min([cb_geom.h_cb, cb_geom.w_cb])/4 # heuristic; possibly make this argument
+    sz_cam = np.min([cb_geom.h_cb, cb_geom.w_cb])/4 # heuristic; possibly make this an argument
     ps_axes = torch.DoubleTensor([[         0,          0,          0],
                                   [2.0*sz_cam,          0,          0],
                                   [         0,          0,          0],
@@ -109,7 +109,7 @@ def plot_extrinsics(rigids_pos, rigids_cam, cb_geom, ax=None):
 
     # Format plot
     ps_all = np.concatenate(ps_all)
-    bb = np.c_[ps_all.min(axis=0), ps_all.max(axis=0)].T
+    bb = ps_bb(ps_all)
     ax.set_xlim(bb[0,0], bb[1,0])
     ax.set_ylim(bb[0,2], bb[1,2])
     ax.set_zlim(bb[0,1], bb[1,1])

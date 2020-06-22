@@ -81,7 +81,7 @@ class Rotation(Inversible):
 
     def forward(self, ps, inverse=False):
         R = self.forward_param() if not inverse else self.inverse_param()
-        return pmm(R, ps)
+        return pmm(ps, R)
     def inverse(self, ps): return self.forward(ps, inverse=True)
 
 #Cell
@@ -269,7 +269,7 @@ class Cam(Inversible):
 
     def forward(self, ps, inverse=False):
         A = self.forward_param() if not inverse else self.inverse_param()
-        return pmm(A, ps, aug=True)
+        return pmm(ps, A, aug=True)
     def inverse(self, ps): return self.forward(ps, inverse=True)
 
 #Cell

@@ -126,8 +126,8 @@ def single_calib(imgs,
     pss_c_p = []
     for img, H in zip(imgs, Hs):
         print(f'Refining control points for: {img.name}...')
-        ps_c_p = pmm(H, ps_c_w, aug=True) # This guess should be updated for circle control points
-        bs_c_p = [pmm(H, b_c_w, aug=True) for b_c_w in bs_c_w]
+        ps_c_p = pmm(ps_c_w, H, aug=True) # This guess should be updated for circle control points
+        bs_c_p = [pmm(b_c_w, H, aug=True) for b_c_w in bs_c_w]
         pss_c_p.append(refiner(img.array_gs, ps_c_p, bs_c_p))
 
     # Update homographies with refined control points; should be updated for circle control points

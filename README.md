@@ -156,38 +156,6 @@ cams, distorts, rigids_pos, rigids_cam, debug = calib_multi(imgs, cb_geom, detec
      - Iteration: 006 - Norm:    0.00000 - Loss:    2.63034
     Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1...
     Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2...
-    Refining single parameters...
-     - Iteration: 000 - Norm:    0.04608 - Loss:   59.65914
-     - Iteration: 001 - Norm:    0.17380 - Loss:   21.75514
-     - Iteration: 002 - Norm:    0.19863 - Loss:   10.38609
-     - Iteration: 003 - Norm:    0.12684 - Loss:   10.02735
-     - Iteration: 004 - Norm:   89.80061 - Loss:    5.97396
-     - Iteration: 005 - Norm:   16.32146 - Loss:    1.76116
-     - Iteration: 006 - Norm:    0.00000 - Loss:    1.76116
-    Refining multi parameters...
-     - Iteration: 000 - Norm:    0.00056 - Loss:   10.38034
-     - Iteration: 001 - Norm:    0.00082 - Loss:    8.47968
-     - Iteration: 002 - Norm:    0.00098 - Loss:    8.07391
-     - Iteration: 003 - Norm:    0.00099 - Loss:    7.88472
-     - Iteration: 004 - Norm:    0.00292 - Loss:    7.64915
-     - Iteration: 005 - Norm:    0.00345 - Loss:    7.46645
-     - Iteration: 006 - Norm:    0.00588 - Loss:    7.30868
-     - Iteration: 007 - Norm:    0.00090 - Loss:    7.29254
-     - Iteration: 008 - Norm:    0.00219 - Loss:    7.28159
-     - Iteration: 009 - Norm:    0.00238 - Loss:    7.26833
-     - Iteration: 010 - Norm:    0.00568 - Loss:    7.24649
-     - Iteration: 011 - Norm:    0.00368 - Loss:    7.23508
-     - Iteration: 012 - Norm:    0.01295 - Loss:    7.20371
-     - Iteration: 013 - Norm:    0.00073 - Loss:    7.20276
-     - Iteration: 014 - Norm:    0.00656 - Loss:    7.19368
-     - Iteration: 015 - Norm:    0.02478 - Loss:    7.16473
-     - Iteration: 016 - Norm:    0.00021 - Loss:    7.16465
-     - Iteration: 017 - Norm:    0.05316 - Loss:    7.13839
-     - Iteration: 018 - Norm:    0.00032 - Loss:    7.13833
-     - Iteration: 019 - Norm:    0.04042 - Loss:    7.12686
-     - Iteration: 020 - Norm:    0.03808 - Loss:    7.11983
-     - Iteration: 021 - Norm:    0.00315 - Loss:    7.11905
-     - Iteration: 022 - Norm:    0.00000 - Loss:    7.11905
 
 
 From Bo Li's calibration paper, we know the coordinate graph of poses and cameras forms a bipartite graph. For debugging purposes this is displayed below.
@@ -196,10 +164,6 @@ From Bo Li's calibration paper, we know the coordinate graph of poses and camera
 ```python
 draw_bipartite(*debug[2:])
 ```
-
-
-![png](README_files/README_20_0.png)
-
 
 Plot refined and model control points
 
@@ -211,26 +175,6 @@ for idx, img in enumerate(imgs):
     plt.plot(debug[0][idx][:,0], debug[0][idx][:,1], 'rs')
     plt.plot(debug[1][idx][:,0], debug[1][idx][:,1], 'gs')
 ```
-
-
-![png](README_files/README_22_0.png)
-
-
-
-![png](README_files/README_22_1.png)
-
-
-
-![png](README_files/README_22_2.png)
-
-
-
-![png](README_files/README_22_3.png)
-
-
-
-![png](README_files/README_22_4.png)
-
 
 Plot residuals
 
@@ -244,27 +188,12 @@ plt.gca().set_xlim(-0.25, 0.25)
 plt.gca().set_ylim(-0.25, 0.25)
 ```
 
-
-
-
-    (-0.25, 0.25)
-
-
-
-
-![png](README_files/README_24_1.png)
-
-
 Plot extrinsics; note that `%matplotlib notebook` can be used to make the plot interactive
 
 
 ```python
 plot_extrinsics(rigids_pos, rigids_cam, cb_geom)
 ```
-
-
-![png](README_files/README_26_0.png)
-
 
 Makes sense!
 
@@ -274,17 +203,3 @@ Makes sense!
 ```python
 !jupyter nbconvert --to markdown README.ipynb
 ```
-
-    [NbConvertApp] Converting notebook README.ipynb to markdown
-    [NbConvertApp] Support files will be in README_files/
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Writing 10224 bytes to README.md
-

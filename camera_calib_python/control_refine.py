@@ -119,7 +119,7 @@ def checker_opencv(arr_dx, arr_dy, W=None):
     p,_,_,_ = wlstsq(A, b, W)
 
     # Convert back to unconditioned points
-    return pmm(np.linalg.inv(T), p, aug=True)
+    return pmm(p, np.linalg.inv(T), aug=True)
 
 #Cell
 class OpenCVCheckerRefiner(CheckerRefiner):
