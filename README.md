@@ -156,6 +156,25 @@ cams, distorts, rigids_pos, rigids_cam, debug = calib_multi(imgs, cb_geom, detec
      - Iteration: 006 - Norm:    0.00000 - Loss:    2.63034
     Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1...
     Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2...
+    Refining single parameters...
+     - Iteration: 000 - Norm:    0.04608 - Loss:   59.65914
+     - Iteration: 001 - Norm:    0.17380 - Loss:   21.75514
+     - Iteration: 002 - Norm:    0.19863 - Loss:   10.38609
+     - Iteration: 003 - Norm:    0.12684 - Loss:   10.02735
+     - Iteration: 004 - Norm:   89.80061 - Loss:    5.97396
+     - Iteration: 005 - Norm:   16.32146 - Loss:    1.76116
+     - Iteration: 006 - Norm:    0.00000 - Loss:    1.76116
+    Refining multi parameters...
+     - Iteration: 000 - Norm:    0.00056 - Loss:   10.38034
+     - Iteration: 001 - Norm:    0.00082 - Loss:    8.47968
+     - Iteration: 002 - Norm:    0.00098 - Loss:    8.07391
+     - Iteration: 003 - Norm:    0.00099 - Loss:    7.88472
+     - Iteration: 004 - Norm:    0.00292 - Loss:    7.64915
+     - Iteration: 005 - Norm:    0.00345 - Loss:    7.46645
+     - Iteration: 006 - Norm:    0.00588 - Loss:    7.30868
+     - Iteration: 007 - Norm:    0.00090 - Loss:    7.29254
+     - Iteration: 008 - Norm:    0.00219 - Loss:    7.28159
+     - Iteration: 009 - Norm:    0.00238 - Loss:    7.26833
 
 
 From Bo Li's calibration paper, we know the coordinate graph of poses and cameras forms a bipartite graph. For debugging purposes this is displayed below.
