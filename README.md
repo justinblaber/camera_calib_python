@@ -50,7 +50,7 @@ cb_geom = CbGeom(h_cb, w_cb,
 
 
 ```python
-cb_geom.plt()
+cb_geom.plot()
 ```
 
 
@@ -74,7 +74,7 @@ detector = DotVisionCheckerDLDetector(file_model)
 refiner = OpenCVCheckerRefiner(hw_min=5, hw_max=15, cutoff_it=20, cutoff_norm=1e-3)
 ```
 
-4) Get images and respective camera and pose indices from the file name
+4) Get images and respective camera and calibration board indices from the file name
 
 
 ```python
@@ -113,27 +113,27 @@ for file_img in files_img:
     dict_group = _parse_name(file_img.name)
     img = File16bitImg(file_img)
     img.idx_cam = int(dict_group['cam'])-1
-    img.idx_pos = int(dict_group['counter'])-1
+    img.idx_cb  = int(dict_group['counter'])-1
     imgs.append(img)
 ```
 
 
 ```python
-for img in imgs: print(f'{img.name} - cam: {img.idx_cam} - pos: {img.idx_pos}')
+for img in imgs: print(f'{img.name} - cam: {img.idx_cam} - cb: {img.idx_cb}')
 ```
 
-    SERIAL_16276941_DATETIME_2019-06-07-00:38:48-109732_CAM_2_FRAMEID_0_COUNTER_2 - cam: 1 - pos: 1
-    SERIAL_19061245_DATETIME_2019-06-07-00:38:19-438594_CAM_1_FRAMEID_0_COUNTER_1 - cam: 0 - pos: 0
-    SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1 - cam: 2 - pos: 0
-    SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2 - cam: 2 - pos: 1
-    SERIAL_16276941_DATETIME_2019-06-07-00:38:19-438631_CAM_2_FRAMEID_0_COUNTER_1 - cam: 1 - pos: 0
+    SERIAL_16276941_DATETIME_2019-06-07-00:38:48-109732_CAM_2_FRAMEID_0_COUNTER_2 - cam: 1 - cb: 1
+    SERIAL_19061245_DATETIME_2019-06-07-00:38:19-438594_CAM_1_FRAMEID_0_COUNTER_1 - cam: 0 - cb: 0
+    SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1 - cam: 2 - cb: 0
+    SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2 - cam: 2 - cb: 1
+    SERIAL_16276941_DATETIME_2019-06-07-00:38:19-438631_CAM_2_FRAMEID_0_COUNTER_1 - cam: 1 - cb: 0
 
 
 Now, we can calibrate
 
 
 ```python
-cams, distorts, rigids_pos, rigids_cam, debug = calib_multi(imgs, cb_geom, detector, refiner)
+cams, distorts, rigids_cb, rigids_cam, debug = calib_multi(imgs, cb_geom, detector, refiner)
 ```
 
     Refining control points for: SERIAL_19061245_DATETIME_2019-06-07-00:38:19-438594_CAM_1_FRAMEID_0_COUNTER_1...
@@ -145,36 +145,6 @@ cams, distorts, rigids_pos, rigids_cam, debug = calib_multi(imgs, cb_geom, detec
      - Iteration: 004 - Norm:   53.26645 - Loss:    1.69542
      - Iteration: 005 - Norm:    0.00000 - Loss:    1.69542
     Refining control points for: SERIAL_16276941_DATETIME_2019-06-07-00:38:48-109732_CAM_2_FRAMEID_0_COUNTER_2...
-    Refining control points for: SERIAL_16276941_DATETIME_2019-06-07-00:38:19-438631_CAM_2_FRAMEID_0_COUNTER_1...
-    Refining single parameters...
-     - Iteration: 000 - Norm:    0.04100 - Loss:  145.66077
-     - Iteration: 001 - Norm:    0.13687 - Loss:   83.93632
-     - Iteration: 002 - Norm:    0.84322 - Loss:    3.98970
-     - Iteration: 003 - Norm:    0.27753 - Loss:    3.59056
-     - Iteration: 004 - Norm:    6.16048 - Loss:    3.37696
-     - Iteration: 005 - Norm:   21.15202 - Loss:    2.63034
-     - Iteration: 006 - Norm:    0.00000 - Loss:    2.63034
-    Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1...
-    Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2...
-    Refining single parameters...
-     - Iteration: 000 - Norm:    0.04608 - Loss:   59.65914
-     - Iteration: 001 - Norm:    0.17380 - Loss:   21.75514
-     - Iteration: 002 - Norm:    0.19863 - Loss:   10.38609
-     - Iteration: 003 - Norm:    0.12684 - Loss:   10.02735
-     - Iteration: 004 - Norm:   89.80061 - Loss:    5.97396
-     - Iteration: 005 - Norm:   16.32146 - Loss:    1.76116
-     - Iteration: 006 - Norm:    0.00000 - Loss:    1.76116
-    Refining multi parameters...
-     - Iteration: 000 - Norm:    0.00056 - Loss:   10.38034
-     - Iteration: 001 - Norm:    0.00082 - Loss:    8.47968
-     - Iteration: 002 - Norm:    0.00098 - Loss:    8.07391
-     - Iteration: 003 - Norm:    0.00099 - Loss:    7.88472
-     - Iteration: 004 - Norm:    0.00292 - Loss:    7.64915
-     - Iteration: 005 - Norm:    0.00345 - Loss:    7.46645
-     - Iteration: 006 - Norm:    0.00588 - Loss:    7.30868
-     - Iteration: 007 - Norm:    0.00090 - Loss:    7.29254
-     - Iteration: 008 - Norm:    0.00219 - Loss:    7.28159
-     - Iteration: 009 - Norm:    0.00238 - Loss:    7.26833
 
 
 From Bo Li's calibration paper, we know the coordinate graph of poses and cameras forms a bipartite graph. For debugging purposes this is displayed below.
@@ -211,10 +181,10 @@ Plot extrinsics; note that `%matplotlib notebook` can be used to make the plot i
 
 
 ```python
-plot_extrinsics(rigids_pos, rigids_cam, cb_geom)
+plot_extrinsics(rigids_cb, rigids_cam, cb_geom)
 ```
 
-Makes sense!
+This matches pretty closely to my camera rig
 
 # Build
 

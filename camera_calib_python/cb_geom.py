@@ -23,12 +23,8 @@ def csdgrid(num_h, num_w, spacing, fo): # Pretty sure this implementation can be
     xs_grid, ys_grid = np.linspace(-w/2, w/2, num_w), np.linspace(-h/2, h/2, num_h)
     ps = []
     for x_grid in xs_grid:
-        if fo:
-            ys = ys_grid[0::2]
-            fo = False
-        else:
-            ys = ys_grid[1::2]
-            fo = True
+        if fo: ys, fo = ys_grid[0::2], False
+        else:  ys, fo = ys_grid[1::2], True
         xs = np.tile(x_grid, len(ys))
         ps.append(np.c_[xs, ys])
     return np.concatenate(ps)
@@ -110,23 +106,23 @@ class CbGeom():
     @property
     def ps_f(self): return np.delete(self.fm_geom.ps, self.idx_f_exclude, axis=0)
 
-    def plt(self, ax=None):
+    def plot(self, ax=None):
         if ax is None:
             plt.figure(figsize=(10,10))
             ax = plt.gca()
 
-        def _plt_ps(ps, style):
+        def _plot_ps(ps, style):
             ax.plot(ps[:,0], ps[:,1], style)
             for idx, p in enumerate(ps): ax.text(p[0], p[1], str(idx))
 
         # Control points
-        _plt_ps(self.ps_c, 'gs')
+        _plot_ps(self.ps_c, 'gs')
         for b_c in self.bs_c:
             ax.plot(np.r_[b_c[:,0], b_c[0,0]],
                     np.r_[b_c[:,1], b_c[0,1]], 'r')
 
         # Fiducial markers
-        if self.fm_geom is not None: _plt_ps(self.ps_f, 'bs')
+        if self.fm_geom is not None: _plot_ps(self.ps_f, 'bs')
 
         ax.set_xlim(-self.w_cb/2, self.w_cb/2)
         ax.set_ylim(-self.h_cb/2, self.h_cb/2)

@@ -58,7 +58,7 @@ class File16bitImg(FileImg):
     @property
     def array(self):
         arr = np.array(Image.open(self.file_img), dtype=np.float)
-        arr /= 2**16 # Scale between 0 and 1 for 16 bit image
+        arr /= 2**16-1 # Scale between 0 and 1 for 16 bit image
         return arr
 
 #Cell
