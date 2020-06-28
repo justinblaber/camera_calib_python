@@ -216,10 +216,10 @@ def calib_multi(imgs,
     cams = [node_cam.cam for node_cam in nodes_cam]
     distorts = [node_cam.distort for node_cam in nodes_cam]
     rigids_pos = [Rigid(*M2Rt(node_pos.M)) for node_pos in nodes_pos]
-    rigids_cam = [Rigid(*M2Rt(invert_rigid(node_cam.M))) for node_cam in nodes_cam]
+    rigids_cam = [Rigid(*M2Rt(node_cam.M)) for node_cam in nodes_cam]
     if isinstance(refiner, CheckerRefiner):
         w2ps = [torch.nn.Sequential(rigids_pos[img.idx_pos],
-                                    rigids_cam[img.idx_cam],
+                                    Inverse(rigids_cam[img.idx_cam]),
                                     Normalize(),
                                     distorts[img.idx_cam],
                                     cams[img.idx_cam]) for img in imgs]
