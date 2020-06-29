@@ -53,10 +53,6 @@ cb_geom = CbGeom(h_cb, w_cb,
 cb_geom.plot()
 ```
 
-
-![png](README_files/README_7_0.png)
-
-
 2) A fiducial detector needs to be specified. This fiducial detector will take in an image and return the locations of the fiducial markers. The detector in this example is a neural net trained specifically on my calibration board. More info available at:
 
 * https://github.com/justinblaber/fiducial_detect
@@ -81,17 +77,6 @@ refiner = OpenCVCheckerRefiner(hw_min=5, hw_max=15, cutoff_it=20, cutoff_norm=1e
 files_img = list(Path('data/dot_vision_checker').glob('*.png'))
 files_img
 ```
-
-
-
-
-    [PosixPath('data/dot_vision_checker/SERIAL_16276941_DATETIME_2019-06-07-00:38:48-109732_CAM_2_FRAMEID_0_COUNTER_2.png'),
-     PosixPath('data/dot_vision_checker/SERIAL_19061245_DATETIME_2019-06-07-00:38:19-438594_CAM_1_FRAMEID_0_COUNTER_1.png'),
-     PosixPath('data/dot_vision_checker/SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1.png'),
-     PosixPath('data/dot_vision_checker/SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2.png'),
-     PosixPath('data/dot_vision_checker/SERIAL_16276941_DATETIME_2019-06-07-00:38:19-438631_CAM_2_FRAMEID_0_COUNTER_1.png')]
-
-
 
 
 ```python
@@ -122,13 +107,6 @@ for file_img in files_img:
 for img in imgs: print(f'{img.name} - cam: {img.idx_cam} - cb: {img.idx_cb}')
 ```
 
-    SERIAL_16276941_DATETIME_2019-06-07-00:38:48-109732_CAM_2_FRAMEID_0_COUNTER_2 - cam: 1 - cb: 1
-    SERIAL_19061245_DATETIME_2019-06-07-00:38:19-438594_CAM_1_FRAMEID_0_COUNTER_1 - cam: 0 - cb: 0
-    SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1 - cam: 2 - cb: 0
-    SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2 - cam: 2 - cb: 1
-    SERIAL_16276941_DATETIME_2019-06-07-00:38:19-438631_CAM_2_FRAMEID_0_COUNTER_1 - cam: 1 - cb: 0
-
-
 Now, we can calibrate
 
 
@@ -136,71 +114,12 @@ Now, we can calibrate
 cams, distorts, rigids_cb, rigids_cam, debug = calib_multi(imgs, cb_geom, detector, refiner)
 ```
 
-    Refining control points for: SERIAL_19061245_DATETIME_2019-06-07-00:38:19-438594_CAM_1_FRAMEID_0_COUNTER_1...
-    Refining single parameters...
-     - Iteration: 000 - Norm:    0.00483 - Loss:    5.36058
-     - Iteration: 001 - Norm:    0.15146 - Loss:    3.71881
-     - Iteration: 002 - Norm:    3.92902 - Loss:    3.49835
-     - Iteration: 003 - Norm:    7.61183 - Loss:    3.26027
-     - Iteration: 004 - Norm:   53.26645 - Loss:    1.69542
-     - Iteration: 005 - Norm:    0.00000 - Loss:    1.69542
-    Refining control points for: SERIAL_16276941_DATETIME_2019-06-07-00:38:48-109732_CAM_2_FRAMEID_0_COUNTER_2...
-    Refining control points for: SERIAL_16276941_DATETIME_2019-06-07-00:38:19-438631_CAM_2_FRAMEID_0_COUNTER_1...
-    Refining single parameters...
-     - Iteration: 000 - Norm:    0.04100 - Loss:  145.66077
-     - Iteration: 001 - Norm:    0.13687 - Loss:   83.93632
-     - Iteration: 002 - Norm:    0.84322 - Loss:    3.98970
-     - Iteration: 003 - Norm:    0.27753 - Loss:    3.59056
-     - Iteration: 004 - Norm:    6.15321 - Loss:    3.37721
-     - Iteration: 005 - Norm:   21.15929 - Loss:    2.63034
-     - Iteration: 006 - Norm:    0.00000 - Loss:    2.63034
-    Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1...
-    Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2...
-    Refining single parameters...
-     - Iteration: 000 - Norm:    0.04608 - Loss:   59.65914
-     - Iteration: 001 - Norm:    0.17380 - Loss:   21.75514
-     - Iteration: 002 - Norm:    0.19863 - Loss:   10.38609
-     - Iteration: 003 - Norm:    0.12684 - Loss:   10.02735
-     - Iteration: 004 - Norm:   89.80364 - Loss:    5.97723
-     - Iteration: 005 - Norm:   16.31843 - Loss:    1.76116
-     - Iteration: 006 - Norm:    0.00000 - Loss:    1.76116
-    Refining multi parameters...
-     - Iteration: 000 - Norm:    0.00057 - Loss:   10.11951
-     - Iteration: 001 - Norm:    0.00073 - Loss:    8.45522
-     - Iteration: 002 - Norm:    0.00083 - Loss:    8.08294
-     - Iteration: 003 - Norm:    0.00103 - Loss:    7.85690
-     - Iteration: 004 - Norm:    0.00327 - Loss:    7.60429
-     - Iteration: 005 - Norm:    0.00038 - Loss:    7.56571
-     - Iteration: 006 - Norm:    0.00485 - Loss:    7.38994
-     - Iteration: 007 - Norm:    0.00338 - Loss:    7.28695
-     - Iteration: 008 - Norm:    0.00295 - Loss:    7.26749
-     - Iteration: 009 - Norm:    0.00387 - Loss:    7.25113
-     - Iteration: 010 - Norm:    0.01174 - Loss:    7.20809
-     - Iteration: 011 - Norm:    0.00257 - Loss:    7.20042
-     - Iteration: 012 - Norm:    0.00234 - Loss:    7.19642
-     - Iteration: 013 - Norm:    0.00498 - Loss:    7.18732
-     - Iteration: 014 - Norm:    0.00004 - Loss:    7.18730
-     - Iteration: 015 - Norm:    0.02043 - Loss:    7.16305
-     - Iteration: 016 - Norm:    0.00034 - Loss:    7.16265
-     - Iteration: 017 - Norm:    0.01936 - Loss:    7.14358
-     - Iteration: 018 - Norm:    0.00091 - Loss:    7.14324
-     - Iteration: 019 - Norm:    0.03660 - Loss:    7.12997
-     - Iteration: 020 - Norm:    0.00000 - Loss:    7.12997
-     - Iteration: 021 - Norm:    0.01197 - Loss:    7.12733
-     - Iteration: 022 - Norm:    0.01581 - Loss:    7.12422
-     - Iteration: 023 - Norm:    0.00000 - Loss:    7.12422
-
-
 From Bo Li's calibration paper, we know the coordinate graph of poses and cameras forms a bipartite graph. For debugging purposes this is displayed below.
 
 
 ```python
 draw_bipartite(*debug[2:])
 ```
-
-
-![png](README_files/README_20_0.png)
-
 
 Plot refined and model control points
 
@@ -212,26 +131,6 @@ for idx, img in enumerate(imgs):
     plt.plot(debug[0][idx][:,0], debug[0][idx][:,1], 'rs')
     plt.plot(debug[1][idx][:,0], debug[1][idx][:,1], 'gs')
 ```
-
-
-![png](README_files/README_22_0.png)
-
-
-
-![png](README_files/README_22_1.png)
-
-
-
-![png](README_files/README_22_2.png)
-
-
-
-![png](README_files/README_22_3.png)
-
-
-
-![png](README_files/README_22_4.png)
-
 
 Plot residuals
 
@@ -245,34 +144,12 @@ plt.gca().set_xlim(-0.25, 0.25)
 plt.gca().set_ylim(-0.25, 0.25)
 ```
 
-
-
-
-    (-0.25, 0.25)
-
-
-
-
-![png](README_files/README_24_1.png)
-
-
 Plot extrinsics; note that `%matplotlib notebook` can be used to make the plot interactive
 
 
 ```python
 plot_extrinsics(rigids_cb, rigids_cam, cb_geom)
 ```
-
-
-
-
-    <Axes3DSubplot:>
-
-
-
-
-![png](README_files/README_26_1.png)
-
 
 This matches pretty closely to my camera rig
 
@@ -282,17 +159,3 @@ This matches pretty closely to my camera rig
 ```python
 !jupyter nbconvert --to markdown README.ipynb
 ```
-
-    [NbConvertApp] Converting notebook README.ipynb to markdown
-    [NbConvertApp] Support files will be in README_files/
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Making directory README_files
-    [NbConvertApp] Writing 10076 bytes to README.md
-
