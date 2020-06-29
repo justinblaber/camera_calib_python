@@ -10,7 +10,6 @@ import torch
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 from .cb_geom import cfpgrid
-from .modules import Inverse
 from .utils import *
 
 #Cell

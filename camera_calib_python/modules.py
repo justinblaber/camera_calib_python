@@ -146,8 +146,8 @@ class Rigids(InversibleSequential):
         super().__init__(rigids)
 
     def forward_param(self):
-        M = torch.eye(4)
-        for m in self.ms:
+        M = self.ms[0].forward_param()
+        for m in self.ms[1:]:
             M = mult_rigid(m.forward_param(), M)
         return M
 

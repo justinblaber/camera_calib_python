@@ -279,10 +279,12 @@ This matches pretty closely to my camera rig
 # Build
 
 
+```javascript
+%%javascript
+IPython.notebook.save_notebook()
+```
+
+
 ```python
 !jupyter nbconvert --to markdown README.ipynb
 ```
-
-    [NbConvertApp] Converting notebook README.ipynb to markdown
-    [NbConvertApp] Writing 4967 bytes to README.md
-
