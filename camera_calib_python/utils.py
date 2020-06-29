@@ -2,8 +2,9 @@
 
 __all__ = ['reverse', 'torch2np', 'assert_allclose', 'assert_allclose_f', 'assert_allclose_f_ttn', 'psify', 'augment',
            'deaugment', 'normalize', 'unitize', 'pmm', 'ps_bb', 'array_bb', 'bb_sz', 'bb_grid', 'bb_array', 'grid2ps',
-           'array_ps', 'condition_mat', 'condition', 'homography', 'approx_R', 'sample_2pi', 'sample_ellipse',
-           'ellipse2conic', 'conic2ellipse', 'conv2d', 'grad_array', 'wlstsq']
+           'array_ps', 'condition_mat', 'condition', 'homography', 'approx_R', 'Rt2M', 'M2Rt', 'invert_rigid',
+           'mult_rigid', 'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'conv2d', 'grad_array',
+           'wlstsq']
 
 #Cell
 import numpy as np
@@ -149,6 +150,26 @@ def approx_R(R):
     if not np.isclose(np.linalg.det(R), 1):
         R = np.full((3,3), np.nan)
     return R
+
+#Cell
+def Rt2M(R, t):
+    M = torch.cat([R, t[:,None]], dim=1)
+    M = torch.cat([M, M.new_tensor([[0,0,0,1]])])
+    return M
+
+#Cell
+def M2Rt(M): return M[0:3,0:3], M[0:3,3]
+
+#Cell
+def invert_rigid(M):
+    R, t = M2Rt(M)
+    return Rt2M(R.T, -R.T@t)
+
+#Cell
+def mult_rigid(M1, M2):
+    R1, t1 = M2Rt(M1)
+    R2, t2 = M2Rt(M2)
+    return Rt2M(R1@R2, R1@t2+t1)
 
 #Cell
 def sample_2pi(num_samples): return np.linspace(0, 2*np.pi, num_samples+1)[:-1]

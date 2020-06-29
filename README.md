@@ -286,5 +286,13 @@ This matches pretty closely to my camera rig
     [NbConvertApp] Converting notebook README.ipynb to markdown
     [NbConvertApp] Support files will be in README_files/
     [NbConvertApp] Making directory README_files
-    [NbConvertApp] Writing 6758 bytes to README.md
+    [NbConvertApp] Making directory README_files
+    [NbConvertApp] Making directory README_files
+    [NbConvertApp] Making directory README_files
+    [NbConvertApp] Making directory README_files
+    [NbConvertApp] Making directory README_files
+    [NbConvertApp] Making directory README_files
+    [NbConvertApp] Making directory README_files
+    [NbConvertApp] Making directory README_files
+    [NbConvertApp] Writing 10076 bytes to README.md
 

@@ -11,7 +11,7 @@ import torch
 
 from .control_refine import CheckerRefiner
 from .modules import (CamSF, Heikkila97Distortion, Inverse,
-                                         M2Rt, Normalize, Rigid, invert_rigid)
+                                         Normalize, Rigid)
 from .utils import *
 
 #Cell
