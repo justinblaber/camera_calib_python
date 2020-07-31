@@ -85,7 +85,7 @@ for img in imgs: print(f'{img.name} - cam: {img.idx_cam} - cb: {img.idx_cb}')
 
 ### 2) Calibration board geometry
 
-1) The first thing to do is define a calibration board geometry. This specifies where fiducial markers and control points are located. For this example, my dot vision checker board is used.
+The calibration board geometry specifies where fiducial markers and control points are located. For this example, my dot vision checker board is used.
 
 
 ```python
@@ -129,7 +129,7 @@ detector = api.DotVisionCheckerDLDetector(file_model)
 
 ### 4) Control Point Refiner
 
-The refiner will take in an image, initial guesses for control points, and the boundaries around the control points. These boundaries help determine how much neighboring info can be used to refine the control point.
+The refiner will take in an image, initial guesses for control points, and the boundaries around the control points, and return a refined point. The boundaries help determine how much neighboring info can be used to refine the control point.
 
 
 ```python
@@ -160,8 +160,8 @@ calib = api.multi_calib(imgs, cb_geom, detector, refiner)
      - Iteration: 001 - Norm:    0.13431 - Loss:   83.63355
      - Iteration: 002 - Norm:    0.84358 - Loss:    3.92886
      - Iteration: 003 - Norm:    0.27788 - Loss:    3.59249
-     - Iteration: 004 - Norm:   27.32690 - Loss:    2.63209
-     - Iteration: 005 - Norm:    0.01235 - Loss:    2.63208
+     - Iteration: 004 - Norm:   27.32694 - Loss:    2.63209
+     - Iteration: 005 - Norm:    0.01238 - Loss:    2.63208
      - Iteration: 006 - Norm:    0.00000 - Loss:    2.63208
     Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:19-438636_CAM_3_FRAMEID_0_COUNTER_1...
     Refining control points for: SERIAL_16276942_DATETIME_2019-06-07-00:38:48-109736_CAM_3_FRAMEID_0_COUNTER_2...
@@ -170,33 +170,34 @@ calib = api.multi_calib(imgs, cb_geom, detector, refiner)
      - Iteration: 001 - Norm:    0.18309 - Loss:   23.21653
      - Iteration: 002 - Norm:    0.19523 - Loss:   10.38509
      - Iteration: 003 - Norm:    0.09765 - Loss:   10.04688
-     - Iteration: 004 - Norm:    1.24148 - Loss:    9.89971
-     - Iteration: 005 - Norm:  104.59143 - Loss:    1.76128
-     - Iteration: 006 - Norm:    0.30163 - Loss:    1.76086
+     - Iteration: 004 - Norm:    1.24157 - Loss:    9.89971
+     - Iteration: 005 - Norm:  104.59411 - Loss:    1.76128
+     - Iteration: 006 - Norm:    0.29888 - Loss:    1.76086
      - Iteration: 007 - Norm:    0.00000 - Loss:    1.76086
     Refining multi parameters...
      - Iteration: 000 - Norm:    0.00057 - Loss:   10.14000
-     - Iteration: 001 - Norm:    0.00077 - Loss:    8.43798
-     - Iteration: 002 - Norm:    0.00093 - Loss:    8.04861
-     - Iteration: 003 - Norm:    0.00119 - Loss:    7.83276
-     - Iteration: 004 - Norm:    0.00315 - Loss:    7.58489
-     - Iteration: 005 - Norm:    0.00316 - Loss:    7.44066
-     - Iteration: 006 - Norm:    0.00535 - Loss:    7.29554
-     - Iteration: 007 - Norm:    0.00113 - Loss:    7.28451
-     - Iteration: 008 - Norm:    0.00057 - Loss:    7.28226
-     - Iteration: 009 - Norm:    0.00415 - Loss:    7.26387
-     - Iteration: 010 - Norm:    0.00782 - Loss:    7.23045
-     - Iteration: 011 - Norm:    0.00450 - Loss:    7.21851
-     - Iteration: 012 - Norm:    0.00355 - Loss:    7.20743
-     - Iteration: 013 - Norm:    0.00730 - Loss:    7.19441
-     - Iteration: 014 - Norm:    0.02037 - Loss:    7.17015
-     - Iteration: 015 - Norm:    0.00110 - Loss:    7.16913
-     - Iteration: 016 - Norm:    0.01844 - Loss:    7.15090
-     - Iteration: 017 - Norm:    0.00002 - Loss:    7.15090
-     - Iteration: 018 - Norm:    0.00000 - Loss:    7.15090
+     - Iteration: 001 - Norm:    0.00077 - Loss:    8.43795
+     - Iteration: 002 - Norm:    0.00093 - Loss:    8.04904
+     - Iteration: 003 - Norm:    0.00117 - Loss:    7.83528
+     - Iteration: 004 - Norm:    0.00270 - Loss:    7.61741
+     - Iteration: 005 - Norm:    0.00085 - Loss:    7.56616
+     - Iteration: 006 - Norm:    0.00390 - Loss:    7.39859
+     - Iteration: 007 - Norm:    0.00385 - Loss:    7.29511
+     - Iteration: 008 - Norm:    0.00106 - Loss:    7.28492
+     - Iteration: 009 - Norm:    0.00278 - Loss:    7.27331
+     - Iteration: 010 - Norm:    0.00804 - Loss:    7.24146
+     - Iteration: 011 - Norm:    0.00827 - Loss:    7.21109
+     - Iteration: 012 - Norm:    0.00414 - Loss:    7.20269
+     - Iteration: 013 - Norm:    0.00452 - Loss:    7.19479
+     - Iteration: 014 - Norm:    0.00009 - Loss:    7.19475
+     - Iteration: 015 - Norm:    0.01420 - Loss:    7.17619
+     - Iteration: 016 - Norm:    0.00618 - Loss:    7.17040
+     - Iteration: 017 - Norm:    0.01975 - Loss:    7.15089
+     - Iteration: 018 - Norm:    0.00002 - Loss:    7.15089
+     - Iteration: 019 - Norm:    0.00000 - Loss:    7.15089
 
 
-From Bo Li's calibration paper, we know the coordinate graph of poses and cameras forms a bipartite graph. For debugging purposes this is displayed below.
+From Bo Li's calibration paper, we know the coordinate graph of calibration board poses and cameras forms a bipartite graph. For debugging purposes this is displayed below.
 
 
 ```python
