@@ -4,7 +4,7 @@ __all__ = ["index", "modules", "custom_doc_links", "git_url"]
 
 index = {"plot_bipartite": "api.ipynb",
          "plot_residuals": "api.ipynb",
-         "plot_extrinsics": "api.ipynb",
+         "plot_extrinsics": "plot.ipynb",
          "save": "api.ipynb",
          "load": "api.ipynb",
          "init_intrin": "calib.ipynb",
