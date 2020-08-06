@@ -6,7 +6,7 @@ __all__ = ['args_loop', 'Formatter', 'Torch2np', 'torch2np', 'Np2torch', 'np2tor
            'is_p_in_bb', 'is_bb_in_bb', 'is_p_in_b', 'bb2b', 'grid2ps', 'array_ps', 'crrgrid', 'csrgrid', 'csdgrid',
            'cfpgrid', 'unitize', 'cross_mat', 'pmm', 'condition_mat', 'condition', 'homography', 'approx_R', 'euler2R',
            'R2euler', 'rodrigues2R', 'R2rodrigues', 'approx_R', 'Rt2M', 'M2Rt', 'invert_rigid', 'mult_rigid',
-           'random_unit', 'v_v_angle', 'v_v_R', 'pm2l', 'ps2l', 'pld', 'l_l_intersect', 'b_ls', 'bb_l_intersect',
+           'random_unit', 'v_v_angle', 'v_v_R', 'pm2l', 'ps2l', 'pld', 'l_l_intersect', 'b_ls', 'b_l_intersect',
            'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'rgb2gray', 'imresize', 'conv2d', 'pad',
            'grad_array', 'interp_array', 'wlstsq', 'get_colors', 'get_notebook_file', 'save_notebook', 'build_notebook',
            'convert_notebook']
@@ -462,15 +462,13 @@ def b_ls(b):
 
 # Cell
 @numpyify
-def bb_l_intersect(bb, l):
+def b_l_intersect(b, l):
     ps = []
-    for l_bb in b_ls(bb2b(bb)):
-        p = l_l_intersect(l_bb, l)
-        if (torch.isclose(p[0], bb[0,0]) or p[0] > bb[0,0]) and \
-           (torch.isclose(p[0], bb[1,0]) or p[0] < bb[1,0]) and \
-           (torch.isclose(p[1], bb[0,1]) or p[1] > bb[0,1]) and \
-           (torch.isclose(p[1], bb[1,1]) or p[1] < bb[1,1]):
-            ps.append(p)
+    for idx in torch.arange(len(b)):
+        p1, p2 = b[idx], b[torch.remainder(idx+1, len(b))]
+        p = l_l_intersect(ps2l(p1, p2), l)
+        d, d1, d2 = torch.norm(p2-p1), torch.norm(p1-p), torch.norm(p2-p)
+        if torch.isclose(d, d1+d2): ps.append(p)
     return stackify(tuple(ps))
 
 # Cell
