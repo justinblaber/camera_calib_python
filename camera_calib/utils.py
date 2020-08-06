@@ -6,10 +6,10 @@ __all__ = ['args_loop', 'Formatter', 'Torch2np', 'torch2np', 'Np2torch', 'np2tor
            'is_p_in_bb', 'is_bb_in_bb', 'is_p_in_b', 'bb2b', 'grid2ps', 'array_ps', 'crrgrid', 'csrgrid', 'csdgrid',
            'cfpgrid', 'unitize', 'cross_mat', 'pmm', 'condition_mat', 'condition', 'homography', 'approx_R', 'euler2R',
            'R2euler', 'rodrigues2R', 'R2rodrigues', 'approx_R', 'Rt2M', 'M2Rt', 'invert_rigid', 'mult_rigid',
-           'random_unit', 'v_v_angle', 'v_v_R', 'pm2l', 'ps2l', 'pld', 'l_l_intersect', 'b_ls', 'bb_ls',
-           'bb_l_intersect', 'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'rgb2gray', 'imresize',
-           'conv2d', 'pad', 'grad_array', 'interp_array', 'wlstsq', 'get_colors', 'get_notebook_file', 'save_notebook',
-           'build_notebook', 'convert_notebook']
+           'random_unit', 'v_v_angle', 'v_v_R', 'pm2l', 'ps2l', 'pld', 'l_l_intersect', 'b_ls', 'bb_l_intersect',
+           'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'rgb2gray', 'imresize', 'conv2d', 'pad',
+           'grad_array', 'interp_array', 'wlstsq', 'get_colors', 'get_notebook_file', 'save_notebook', 'build_notebook',
+           'convert_notebook']
 
 # Cell
 import hashlib
@@ -462,17 +462,9 @@ def b_ls(b):
 
 # Cell
 @numpyify
-def bb_ls(bb): return stackify((ps2l(bb[[0,0],[0,1]], bb[[0,1],[0,1]]),
-                                ps2l(bb[[0,0],[0,1]], bb[[1,0],[0,1]]),
-                                ps2l(bb[[0,1],[0,1]], bb[[1,1],[0,1]]),
-                                ps2l(bb[[1,0],[0,1]], bb[[1,1],[0,1]])))
-
-# Cell
-@numpyify
 def bb_l_intersect(bb, l):
-    ls_bb = bb_ls(bb)
     ps = []
-    for l_bb in ls_bb:
+    for l_bb in b_ls(bb2b(bb)):
         p = l_l_intersect(l_bb, l)
         if (torch.isclose(p[0], bb[0,0]) or p[0] > bb[0,0]) and \
            (torch.isclose(p[0], bb[1,0]) or p[0] < bb[1,0]) and \
