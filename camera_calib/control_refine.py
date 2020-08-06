@@ -54,7 +54,7 @@ class CheckerRefiner(CPRefiner):
         self.hw_min, self.hw_max = hw_min, hw_max
 
     def it_preproc(self, p, b):
-        d_min = stackify(tuple(pld(p, l) for l in b_ls(b))).min()
+        d_min = min([pld(p, l) for l in b_ls(b)])
         hw = torch.floor(d_min/math.sqrt(2))
         hw = hw.clamp(self.hw_min, self.hw_max)
         self.hw = hw

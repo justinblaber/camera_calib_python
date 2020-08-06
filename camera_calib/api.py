@@ -13,7 +13,7 @@ from .image import File16bitImg
 def plot_bipartite(calib, ax=None):
     import camera_calib.calib
 
-    camera_calib.calib.plot_bipartite(*calib['debug']['graph'], ax=ax)
+    camera_calib.calib.plot_bipartite(*calib['graph'], ax=ax)
 
 # Cell
 def plot_residuals(calib, ax=None):
@@ -21,7 +21,7 @@ def plot_residuals(calib, ax=None):
 
     if ax == None: _, ax = plt.subplots(1, 1, figsize=(6,6))
 
-    for p1, p2 in zip(calib['debug']['pss_c_p'], calib['debug']['pss_c_p_m']):
+    for p1, p2 in zip(calib['pss_c_p'], calib['pss_c_p_m']):
         res = p1-p2
         plt.plot(res[:,0], res[:,1], 's')
     ax.set_aspect(1)

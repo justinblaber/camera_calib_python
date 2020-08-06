@@ -122,7 +122,7 @@ def single_calib(imgs,
                  cutoff_it=500,
                  cutoff_norm=1e-6,
                  dtype=torch.double,
-                 device=None):
+                 device=torch.device('cpu')):
     if Distortion is None:
         Distortion = lambda:Heikkila97Distortion(torch.zeros(4, dtype=dtype, device=device))
 
@@ -132,7 +132,6 @@ def single_calib(imgs,
     bs_c_w = cb_geom.bs_c(dtype, device)
 
     # Get initial homographies via fiducial markers
-    detector = detector.to(device)
     Hs = [homography(ps_f_w, detector(img.array_gs(dtype, device))) for img in imgs]
 
     # Refine control points
@@ -169,8 +168,15 @@ def single_calib(imgs,
                    cutoff_it,
                    cutoff_norm)
 
-    return {'imgs': imgs, 'cb_geom': cb_geom, 'cam': cam, 'distort': distort, 'rigids': rigids,
-            'debug': {'pss_c_p': pss_c_p, 'pss_c_p_m': [w2p(ps_c_w).detach() for w2p in w2ps]}}
+    return {'imgs': imgs,
+            'cb_geom': cb_geom,
+            'cam': cam,
+            'distort': distort,
+            'rigids': rigids,
+            'pss_c_p': pss_c_p,
+            'pss_c_p_m': [w2p(ps_c_w).detach() for w2p in w2ps],
+            'dtype': dtype,
+            'device': device}
 
 # Cell
 def multi_calib(imgs,
@@ -183,7 +189,7 @@ def multi_calib(imgs,
                 cutoff_it=500,
                 cutoff_norm=1e-6,
                 dtype=torch.double,
-                device=None):
+                device=torch.device('cpu')):
     if Distortion is None:
         Distortion = lambda:Heikkila97Distortion(torch.zeros(4, dtype=dtype, device=device))
 
@@ -213,7 +219,7 @@ def multi_calib(imgs,
                              cutoff_norm,
                              dtype,
                              device)
-        for img_cam, ps_c_p in zip(imgs_cam, calib['debug']['pss_c_p']): img_cam.ps_c_p = ps_c_p
+        for img_cam, ps_c_p in zip(imgs_cam, calib['pss_c_p']): img_cam.ps_c_p = ps_c_p
         node_cam = CamNode(idx_cam, calib['cam'], calib['distort'])
         for img_cam, rigid in zip(imgs_cam, calib['rigids']):
             node_cb = nodes_cb[img_cam.idx_cb]
@@ -258,6 +264,8 @@ def multi_calib(imgs,
             'distorts': distorts,
             'rigids_cb': rigids_cb,
             'rigids_cam': rigids_cam,
-            'debug': {'pss_c_p': pss_c_p,
-                      'pss_c_p_m': [w2p(ps_c_w).detach() for w2p in w2ps],
-                      'graph': (G, nodes_cam, nodes_cb)}}
+            'pss_c_p': pss_c_p,
+            'pss_c_p_m': [w2p(ps_c_w).detach() for w2p in w2ps],
+            'graph': (G, nodes_cam, nodes_cb),
+            'dtype': dtype,
+            'device': device}

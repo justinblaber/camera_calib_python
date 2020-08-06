@@ -15,16 +15,9 @@ from .utils import *
 
 # Cell
 class DotVisionCheckerDLDetector():
-    def __init__(self, file_model, device=None):
+    def __init__(self, file_model, device=torch.device('cpu')):
         self.model = torch.jit.load(file_model.as_posix(), map_location=device).eval()
-
-    def to(self, device):
-        if device is None: return self
-        self = copy.deepcopy(self)
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore")
-            self.model.to(device)
-        return self
+        self.device = device
 
     def format_arr(self, arr):
         if arr.min() < 0: warnings.warn('Value less than zero detected')
@@ -34,11 +27,13 @@ class DotVisionCheckerDLDetector():
         arr = imresize(arr, 384)            # Network trained on grayscale 384 sized images
         arr = rescale(arr, (0, 1), (-1, 1)) # Network trained on images between [-1,1]
         arr = arr[None, None]               # Add batch and channel dimension
+        arr = arr.to(self.device)           # Move to device
         return arr
 
     def get_mask(self, arr):
         with torch.no_grad():
             mask = self.model(self.format_arr(arr)) # Inference
+            mask = mask.to(arr.device)              # Make sure its in the same device as array
             mask = mask.argmax(dim=1)               # Convert from scores to labels
             mask = mask.squeeze(0)                  # Remove batch dimension
         return mask
