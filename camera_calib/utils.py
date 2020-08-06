@@ -3,12 +3,12 @@
 __all__ = ['args_loop', 'Formatter', 'Torch2np', 'torch2np', 'Np2torch', 'np2torch', 'numpyify', 'assert_allclose',
            'assert_allclose_f', 'assert_allclose_f_ttn', 'reverse', 'shape', 'stackify', 'delete', 'rescale',
            'singlify', 'augment', 'deaugment', 'normalize', 'ps_bb', 'array_bb', 'bb_sz', 'bb_grid', 'bb_array',
-           'is_p_in_bb', 'is_bb_in_bb', 'is_p_in_b', 'grid2ps', 'array_ps', 'crrgrid', 'csrgrid', 'csdgrid', 'cfpgrid',
-           'unitize', 'cross_mat', 'pmm', 'condition_mat', 'condition', 'homography', 'approx_R', 'euler2R', 'R2euler',
-           'rodrigues2R', 'R2rodrigues', 'approx_R', 'Rt2M', 'M2Rt', 'invert_rigid', 'mult_rigid', 'random_unit',
-           'v_v_angle', 'v_v_R', 'pm2l', 'ps2l', 'pld', 'l_l_intersect', 'bb_ls', 'bb_l_intersect', 'sample_2pi',
-           'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'rgb2gray', 'imresize', 'conv2d', 'pad', 'grad_array',
-           'interp_array', 'wlstsq', 'get_colors', 'get_notebook_file', 'save_notebook', 'build_notebook',
+           'is_p_in_bb', 'is_bb_in_bb', 'is_p_in_b', 'bb2b', 'grid2ps', 'array_ps', 'crrgrid', 'csrgrid', 'csdgrid',
+           'cfpgrid', 'unitize', 'cross_mat', 'pmm', 'condition_mat', 'condition', 'homography', 'approx_R', 'euler2R',
+           'R2euler', 'rodrigues2R', 'R2rodrigues', 'approx_R', 'Rt2M', 'M2Rt', 'invert_rigid', 'mult_rigid',
+           'random_unit', 'v_v_angle', 'v_v_R', 'pm2l', 'ps2l', 'pld', 'l_l_intersect', 'bb_ls', 'bb_l_intersect',
+           'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'rgb2gray', 'imresize', 'conv2d', 'pad',
+           'grad_array', 'interp_array', 'wlstsq', 'get_colors', 'get_notebook_file', 'save_notebook', 'build_notebook',
            'convert_notebook']
 
 # Cell
@@ -188,6 +188,10 @@ def is_bb_in_bb(bb1, bb2): return is_p_in_bb(bb1[0], bb2) and is_p_in_bb(bb1[1],
 
 # Cell
 def is_p_in_b(p, b): return Polygon(b).contains(Point(*p))
+
+# Cell
+def bb2b(bb): return bb[[[0,0],[0,1],[1,1],[1,0]],
+                        [[0,0],[0,1],[0,1],[0,0]]]
 
 # Cell
 @numpyify
