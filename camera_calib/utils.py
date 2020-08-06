@@ -6,10 +6,10 @@ __all__ = ['args_loop', 'Formatter', 'Torch2np', 'torch2np', 'Np2torch', 'np2tor
            'is_p_in_bb', 'is_bb_in_bb', 'is_p_in_b', 'bb2b', 'grid2ps', 'array_ps', 'crrgrid', 'csrgrid', 'csdgrid',
            'cfpgrid', 'unitize', 'cross_mat', 'pmm', 'condition_mat', 'condition', 'homography', 'approx_R', 'euler2R',
            'R2euler', 'rodrigues2R', 'R2rodrigues', 'approx_R', 'Rt2M', 'M2Rt', 'invert_rigid', 'mult_rigid',
-           'random_unit', 'v_v_angle', 'v_v_R', 'pm2l', 'ps2l', 'pld', 'l_l_intersect', 'bb_ls', 'bb_l_intersect',
-           'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'rgb2gray', 'imresize', 'conv2d', 'pad',
-           'grad_array', 'interp_array', 'wlstsq', 'get_colors', 'get_notebook_file', 'save_notebook', 'build_notebook',
-           'convert_notebook']
+           'random_unit', 'v_v_angle', 'v_v_R', 'pm2l', 'ps2l', 'pld', 'l_l_intersect', 'b_ls', 'bb_ls',
+           'bb_l_intersect', 'sample_2pi', 'sample_ellipse', 'ellipse2conic', 'conic2ellipse', 'rgb2gray', 'imresize',
+           'conv2d', 'pad', 'grad_array', 'interp_array', 'wlstsq', 'get_colors', 'get_notebook_file', 'save_notebook',
+           'build_notebook', 'convert_notebook']
 
 # Cell
 import hashlib
@@ -454,6 +454,11 @@ def l_l_intersect(l1, l2):
     a1, b1, c1 = l1
     a2, b2, c2 = l2
     return stackify(((-c1*b2 + b1*c2)/(a1*b2 - b1*a2), (-a1*c2 + c1*a2)/(a1*b2 - b1*a2)))
+
+# Cell
+@numpyify
+def b_ls(b):
+    return stackify(tuple(ps2l(b[idx], b[torch.remainder(idx+1, len(b))]) for idx in torch.arange(len(b))))
 
 # Cell
 @numpyify

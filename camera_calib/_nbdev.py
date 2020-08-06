@@ -132,7 +132,8 @@ index = {"plot_bipartite": "api.ipynb",
          "build_notebook": "utils.ipynb",
          "convert_notebook": "utils.ipynb",
          "Formatter": "utils.ipynb",
-         "bb2b": "utils.ipynb"}
+         "bb2b": "utils.ipynb",
+         "b_ls": "utils.ipynb"}
 
 modules = ["api.py",
            "calib.py",
